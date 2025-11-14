@@ -146,6 +146,7 @@ CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
+    "https://wortex-devconnector.netlify.app",
 ]
 
 ASGI_APPLICATION = "DevConnector_back.asgi.application"
