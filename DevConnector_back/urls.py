@@ -9,6 +9,7 @@ urlpatterns = [
     path('create-profile/', views.create_profile, name='create_profile'),
     path('profile', views.list_profiles, name='list_profiles'),
     path('profile/user/<uuid:id>', views.get_profile_by_user, name='get_profile_by_user'),
+    path('search/', views.search_profile_by_username, name='search_profile_by_username'),
     path('profile/me', views.get_profile_me, name='get_profile_me'),
     path('profile/<uuid:id>', views.delete_profile, name='delete_profile'),
     path('profile/experience/<uuid:id>', views.delete_experience, name='delete_experience'),

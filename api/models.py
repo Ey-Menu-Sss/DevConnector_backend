@@ -100,3 +100,22 @@ class Comment(models.Model):
 
     def __str__(self):
         return f"Comment by {self.name}"
+    
+
+class Chat(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    type = models.CharField(max_length=50)  # 'private', 'group'
+    users_id = models.JSONField(default=list)  # List of user IDs participating in the chat
+
+    def __str__(self):
+        return f"Chat {self.id}"
+    
+class Messages(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    chat = models.ForeignKey(Chat, on_delete=models.CASCADE, related_name="messages")
+    sender_id = models.UUIDField()
+    text = models.TextField()
+    time = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Message {self.id} in Chat {self.chat.id}"

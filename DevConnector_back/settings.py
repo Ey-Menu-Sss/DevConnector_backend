@@ -15,10 +15,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv("SECRET_KEY")
+# SECRET_KEY = 'django-insecure-ge^5*9kghln7ksnfx$lerj+t8&stc34_hef3elii+tm+8y24b9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-# DEBUG = os.getenv("DEBUG", "False") == "True"
-DEBUG = True
+DEBUG = os.getenv("DEBUG", "False") == "True"
+# DEBUG = True
+
+
+SECURE_COOKIE = not DEBUG
+
+CSRF_COOKIE_SECURE = SECURE_COOKIE
+SESSION_COOKIE_SECURE = SECURE_COOKIE
 
 
 ALLOWED_HOSTS = ["*"]
@@ -33,8 +40,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'api',
+    'channels',
+    'chat',
 ]
 
 MIDDLEWARE = [
@@ -75,6 +86,14 @@ DATABASES = {
     'default': dj_database_url.config(
         default=os.getenv("DATABASE_URL")
     )
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'devconnectordb',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'asdf1sasdf',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
 }
 
 
@@ -123,8 +142,19 @@ CORS_ALLOW_HEADERS = list(default_headers) + [
     "x-auth-token",
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+]
+
+ASGI_APPLICATION = "DevConnector_back.asgi.application"
+
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')

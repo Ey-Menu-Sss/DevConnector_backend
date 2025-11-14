@@ -26,6 +26,26 @@ def create_token(user_id):
     token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
     return token
 
+
+def _get_user_from_token(request):
+    token = request.headers.get("x-auth-token")
+
+    if not token:
+        return None, Response({"error": "Token missing"}, status=401)
+    try:
+        decoded = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        user_id = decoded.get("user_id")
+        user = User.objects.get(id=user_id)
+        return user, None
+    except jwt.ExpiredSignatureError:
+        return None, Response({"error": "Token expired"}, status=401)
+    except jwt.InvalidTokenError:
+        return None, Response({"error": "Invalid token"}, status=401)
+    except User.DoesNotExist:
+        return None, Response({"error": "User not found"}, status=404)
+
+
+
 @api_view(['POST'])
 def register(request):
     name = request.data.get('name')
@@ -40,7 +60,20 @@ def register(request):
     user.save()
 
     token = create_token(user.id)
-    return Response({"token": token}, status=status.HTTP_201_CREATED)
+
+    response = Response({"token": token})
+    response.set_cookie(
+        key='token',
+        value=token,
+        httponly=True,
+        samesite='Lax',
+        secure=True,
+        # secure=False, # for development!
+        max_age=7 * 24 * 60 * 60
+    )
+
+    return response
+
 
 @api_view(['POST'])
 def login(request):
@@ -56,24 +89,19 @@ def login(request):
         return Response({"error": "Invalid credentials"}, status=status.HTTP_400_BAD_REQUEST)
 
     token = create_token(user.id)
-    return Response({"token": token}, status=status.HTTP_200_OK)
 
+    response = Response({"token": token})
+    response.set_cookie(
+        key='token',
+        value=token,
+        httponly=True,
+        samesite='Lax',
+        secure=True,
+        # secure=False, # for development!
+        max_age=7 * 24 * 60 * 60
+    )
 
-def _get_user_from_token(request):
-    token = request.headers.get("x-auth-token")
-    if not token:
-        return None, Response({"error": "Token missing"}, status=401)
-    try:
-        decoded = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
-        user_id = decoded.get("user_id")
-        user = User.objects.get(id=user_id)
-        return user, None
-    except jwt.ExpiredSignatureError:
-        return None, Response({"error": "Token expired"}, status=401)
-    except jwt.InvalidTokenError:
-        return None, Response({"error": "Invalid token"}, status=401)
-    except User.DoesNotExist:
-        return None, Response({"error": "User not found"}, status=404)
+    return response
 
 
 @api_view(['POST'])
@@ -173,6 +201,18 @@ def get_profile_by_user(request, id):
         "experience": exp,
         "education": edu,
     }
+    return Response(data, status=200)
+
+
+@api_view(['GET'])
+def search_profile_by_username(request):
+    query = request.GET.get('q', '')
+    users = []
+
+    if query:
+        users = User.objects.filter(name__icontains=query)
+
+    data = [{"id": i.id, "name": i.name} for i in users]
     return Response(data, status=200)
 
 
@@ -482,7 +522,6 @@ def add_comment(request, id):
 
 # delete_post merged into post_detail
 
-
 @api_view(['DELETE'])
 def delete_comment(request, post_id, comment_id):
     user, error = _get_user_from_token(request)
@@ -506,6 +545,8 @@ def delete_comment(request, post_id, comment_id):
         "date": c.date.strftime('%Y-%m-%d'),
     } for c in post.comments.all().order_by('-date')]
     return Response({"msg": "Comment deleted", "comments": comments}, status=200)
+
+
 
 
 @api_view(['POST'])
