@@ -151,9 +151,15 @@ CORS_ALLOWED_ORIGINS = [
 
 ASGI_APPLICATION = "DevConnector_back.asgi.application"
 
+
+# for development: InMemoryChannelLayer !!!
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+        # "BACKEND": "channels.layers.InMemoryChannelLayer" 
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.environ.get("REDIS_URL")],
+        },
     }
 }
 
