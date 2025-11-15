@@ -66,7 +66,7 @@ def register(request):
         key='token',
         value=token,
         httponly=True,
-        samesite='Lax',
+        samesite='None',
         secure=True,
         # secure=False, # for development!
         max_age=7 * 24 * 60 * 60
@@ -95,7 +95,7 @@ def login(request):
         key='token',
         value=token,
         httponly=True,
-        samesite='Lax',
+        samesite='None',
         secure=True,
         # secure=False, # for development!
         max_age=7 * 24 * 60 * 60
