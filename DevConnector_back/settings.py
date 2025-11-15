@@ -28,7 +28,11 @@ CSRF_COOKIE_SECURE = SECURE_COOKIE
 SESSION_COOKIE_SECURE = SECURE_COOKIE
 
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = [
+    "devconnector-backend-yy5b.onrender.com",
+    "localhost",
+    "127.0.0.1"
+]
 
 
 # Application definition
@@ -141,6 +145,12 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "x-auth-token",
 ]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://devconnector-backend-yy5b.onrender.com",
+    "https://wortex-devconnector.netlify.app"
+]
+
 
 CORS_ALLOW_CREDENTIALS = True
 
