@@ -22,10 +22,11 @@ DEBUG = os.getenv("DEBUG", "False") == "True"
 # DEBUG = True
 
 
-SECURE_COOKIE = not DEBUG
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+SESSION_COOKIE_SAMESITE = 'None'
 
-CSRF_COOKIE_SECURE = SECURE_COOKIE
-SESSION_COOKIE_SECURE = SECURE_COOKIE
 
 
 ALLOWED_HOSTS = [
@@ -55,6 +56,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -142,22 +144,29 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    "x-auth-token",
-]
-
 CSRF_TRUSTED_ORIGINS = [
     "https://devconnector-backend-yy5b.onrender.com",
     "https://wortex-devconnector.netlify.app"
 ]
 
 
+# CORS
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "https://wortex-devconnector.netlify.app",
 ]
+
+CORS_ALLOW_METHODS = [
+    "GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"
+]
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "x-auth-token",
+]
+
+
 
 ASGI_APPLICATION = "DevConnector_back.asgi.application"
 
@@ -176,5 +185,5 @@ CHANNEL_LAYERS = {
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-MIDDLEWARE.insert(1, 'whitenoise.middleware.WhiteNoiseMiddleware')
+
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
