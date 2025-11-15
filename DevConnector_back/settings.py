@@ -168,12 +168,7 @@ CHANNEL_LAYERS = {
         # "BACKEND": "channels.layers.InMemoryChannelLayer" 
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [
-                {
-                    "address": os.getenv("REDIS_URL"),
-                    "ssl": True,
-                }
-            ],
+            "hosts": [os.getenv("REDIS_URL")],
         },
     }
 }
