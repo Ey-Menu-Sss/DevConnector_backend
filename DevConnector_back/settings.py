@@ -151,10 +151,7 @@ CSRF_TRUSTED_ORIGINS = [
 
 
 # CORS
-CORS_ALLOW_CREDENTIALS = True
-
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
     "https://wortex-devconnector.netlify.app",
 ]
 
@@ -165,6 +162,8 @@ CORS_ALLOW_METHODS = [
 CORS_ALLOW_HEADERS = list(default_headers) + [
     "x-auth-token",
 ]
+
+CORS_ALLOW_CREDENTIALS = True
 
 
 
