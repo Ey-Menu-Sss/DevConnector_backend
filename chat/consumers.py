@@ -95,33 +95,38 @@ class ChatConsumer(AsyncWebsocketConsumer):
         #
 
         if action == "new_chat":
-            receiver_id     = message["receiver_id"]
-            sender_id       = message["sender_id"]
-            text            = message["text"]  
+            # receiver_id     = message["receiver_id"]
+            # sender_id       = message["sender_id"]
+            # text            = message["text"]  
 
-            receiver_group_name = f"user_{receiver_id}"
+            # receiver_group_name = f"user_{receiver_id}"
 
-            # create chat and message in DB
-            chat = Chat(type="private", users_id=[receiver_id, sender_id])
-            message_db = Messages(chat_id=chat.id, sender_id=sender_id, text=text)
-            await database_sync_to_async(chat.save)()
-            await database_sync_to_async(message_db.save)()
+            # # create chat and message in DB
+            # chat = Chat(type="private", users_id=[receiver_id, sender_id])
+            # message_db = Messages(chat_id=chat.id, sender_id=sender_id, text=text)
+            # await database_sync_to_async(chat.save)()
+            # await database_sync_to_async(message_db.save)()
 
-            # Send message to receiver's group
+            # # Send message to receiver's group
 
-            await self.channel_layer.group_send(
-                receiver_group_name,
-                {
-                    "type": "chat_message",
-                    "message": message,
-                    "sender_id": sender_id,
-                }
-            )
+            # await self.channel_layer.group_send(
+            #     receiver_group_name,
+            #     {
+            #         "type": "chat_message",
+            #         "message": message,
+            #         "sender_id": sender_id,
+            #     }
+            # )
+
+            # await self.send(text_data=json.dumps({
+            #     "type": "chat_message",
+            #     "message": message,
+            #     "sender_id": sender_id,
+            # }))
 
             await self.send(text_data=json.dumps({
                 "type": "chat_message",
                 "message": message,
-                "sender_id": sender_id,
             }))
 
 
