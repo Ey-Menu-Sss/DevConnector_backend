@@ -224,7 +224,11 @@ def get_profile_me(request):
     try:
         profile = Profile.objects.get(user=user)
     except Profile.DoesNotExist:
-        return Response(user, status=200)
+        return Response({
+            "_id": str(user.id),
+            "name": user.name,
+            "avatar": ""
+        }, status=200)
     # Reuse mapping from get_profile_by_user
     exp = [{
         "_id": str(e.id),
