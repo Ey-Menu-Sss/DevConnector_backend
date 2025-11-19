@@ -155,10 +155,21 @@ class ChatConsumer(AsyncWebsocketConsumer):
             chats = []
             for user in users_from_db:
                 uid = str(user.id)
+                chat_id = map_user_to_chat[uid]
+
+                # --- get last message ---
+                last_msg = await database_sync_to_async(
+                    lambda: Messages.objects.filter(chat_id=chat_id)
+                    .order_by("-time")
+                    .first()
+                )()
+
                 chats.append({
                     "user_id": uid,
                     "name": user.name,
-                    "chat_id": map_user_to_chat[uid],   # ✔ guaranteed to exist
+                    "chat_id": chat_id,
+                    "last_message": last_msg.text if last_msg else None,
+                    "last_message_time": last_msg.time.isoformat() if last_msg else None,
                 })
 
             await self.send(text_data=json.dumps({

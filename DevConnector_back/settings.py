@@ -30,7 +30,7 @@ SESSION_COOKIE_SAMESITE = 'None'
 
 
 ALLOWED_HOSTS = [
-    "devconnector-backend-yy5b.onrender.com",
+    "https://wortex-devconnector.netlify.app",
     "localhost",
     "127.0.0.1"
 ]
@@ -89,17 +89,17 @@ WSGI_APPLICATION = 'DevConnector_back.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.config(
-        default=os.getenv("DATABASE_URL")
-    )
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'devconnectordb',
-    #     'USER': 'postgres',
-    #     'PASSWORD': 'asdf1sasdf',
-    #     'HOST': 'localhost',
-    #     'PORT': '5432',
-    # }
+    # 'default': dj_database_url.config(
+    #     default=os.getenv("DATABASE_URL")
+    # )
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'devconnectordb',
+        'USER': 'postgres',
+        'PASSWORD': 'asdf1sasdf',
+        'HOST': 'localhost',
+        'PORT': '5432',
+    }
 }
 
 
@@ -153,6 +153,7 @@ CSRF_TRUSTED_ORIGINS = [
 # CORS
 CORS_ALLOWED_ORIGINS = [
     "https://wortex-devconnector.netlify.app",
+    "http://localhost:5173/"
 ]
 
 CORS_ALLOW_METHODS = [
@@ -173,11 +174,11 @@ ASGI_APPLICATION = "DevConnector_back.asgi.application"
 # for development: InMemoryChannelLayer !!!
 CHANNEL_LAYERS = {
     "default": {
-        # "BACKEND": "channels.layers.InMemoryChannelLayer" 
-        "BACKEND": "channels_redis.core.RedisChannelLayer",
-        "CONFIG": {
-            "hosts": [os.getenv("REDIS_URL")],
-        },
+        "BACKEND": "channels.layers.InMemoryChannelLayer" 
+        # "BACKEND": "channels_redis.core.RedisChannelLayer",
+        # "CONFIG": {
+        #     "hosts": [os.getenv("REDIS_URL")],
+        # },
     }
 }
 
