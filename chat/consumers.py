@@ -179,7 +179,6 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
 
-
         #
         #    Handle get messages
         #
@@ -223,6 +222,18 @@ class ChatConsumer(AsyncWebsocketConsumer):
                 "sender_id": sender_id,
             }))
 
+
+        #
+        #    Handle send message
+        #
+
+        if action == 'get_all_users':
+            users = await self.get_all_users()
+            await self.send(text_data=json.dumps({
+                "action": "all_users",
+                "users": users
+            }))
+
     # Handle chat message event
 
     async def chat_message(self, event):
@@ -234,12 +245,9 @@ class ChatConsumer(AsyncWebsocketConsumer):
         }))
 
 
-
-
     # 
     #   Helpers
     #
-
 
     # Getting user from DB
     @database_sync_to_async
@@ -280,4 +288,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
             "time": str(msg.time),
         }
 
+    @database_sync_to_async
+    def get_all_users(self):
+        from api.models import User
+        users = User.objects.all().values("id", "name")
+        # Django ORM here is safe
+        return [
+            {
+                "id": str(user["id"]),
+                "name": user["name"]
+            }
+            for user in users
+        ]
 
