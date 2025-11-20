@@ -90,17 +90,17 @@ WSGI_APPLICATION = 'DevConnector_back.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASES = {
-    # 'default': dj_database_url.config(
-    #     default=os.getenv("DATABASE_URL")
-    # )
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'devconnectordb',
-        'USER': 'postgres',
-        'PASSWORD': 'asdf1sasdf',
-        'HOST': 'localhost',
-        'PORT': '5432',
-    }
+    'default': dj_database_url.config(
+        default=os.getenv("DATABASE_URL")
+    )
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'devconnectordb',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'asdf1sasdf',
+    #     'HOST': 'localhost',
+    #     'PORT': '5432',
+    # }
 }
 
 
@@ -175,11 +175,11 @@ ASGI_APPLICATION = "DevConnector_back.asgi.application"
 # for development: InMemoryChannelLayer !!!
 CHANNEL_LAYERS = {
     "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer" 
-        # "BACKEND": "channels_redis.core.RedisChannelLayer",
-        # "CONFIG": {
-        #     "hosts": [os.getenv("REDIS_URL")],
-        # },
+        # "BACKEND": "channels.layers.InMemoryChannelLayer" 
+        "BACKEND": "channels_redis.core.RedisChannelLayer",
+        "CONFIG": {
+            "hosts": [os.getenv("REDIS_URL")],
+        },
     }
 }
 
