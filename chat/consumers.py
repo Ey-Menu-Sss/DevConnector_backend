@@ -103,12 +103,44 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
             # create chat and message in DB
             chat = Chat(type="private", users_id=[receiver_id, sender_id])
-            message_db = Messages(chat_id=chat.id, sender_id=sender_id, text=text)
             await database_sync_to_async(chat.save)()
+
+            message_db = Messages(chat_id=chat.id, sender_id=sender_id, text=text)
             await database_sync_to_async(message_db.save)()
 
-            # Send message to receiver's group
 
+            # Fetch message again to access created_at
+            saved_message = await database_sync_to_async(
+                lambda: Messages.objects.get(id=message_db.id)
+            )()
+
+            # Add time to message object
+            message["time"] = str(saved_message.time)
+
+
+            user = await self.get_user(receiver_id)
+
+             # -------  SEND NEW CHAT CREATED -------
+            chat_obj = {
+                "chat_id": str(chat.id),
+                "user_id": str(receiver_id),      # or the user's id you're chatting with
+                "name": user.name,                  # you can put username here
+                "last_message": text,
+                "last_message_time": message["time"]
+            }
+
+            # Send new chat event to BOTH users
+            for uid in [sender_id, receiver_id]:
+                await self.channel_layer.group_send(
+                    f"user_{uid}",
+                    {
+                        "type": "new_chat_created",
+                        "chat": chat_obj
+                    }
+                )
+            # ----------------------------------------
+
+            # Send message to receiver's group
             await self.channel_layer.group_send(
                 receiver_group_name,
                 {
@@ -237,11 +269,16 @@ class ChatConsumer(AsyncWebsocketConsumer):
     # Handle chat message event
 
     async def chat_message(self, event):
-
         await self.send(text_data=json.dumps({
             "type": "chat_message",
             "message": event["message"],
             "sender_id": event["sender_id"],
+        }))
+
+    async def new_chat_created(self, event):
+        await self.send(text_data=json.dumps({
+            "type": "new_chat_created",
+            "chat": event["chat"],
         }))
 
 
